@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "This is a blueprint for a Surgical Pathology Report document",
+  "class": "Surgical Pathology Report",
+  "type": "object",
+  "definitions": {
+    "DIAGNOSIS": {
+      "type": "object",
+      "properties": {
+        "diagnosis": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "Primary diagnosis from the pathology report"
+        },
+        "tumor_size": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "Size of the tumor in cm"
+        },
+        "cell_type": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "Cell type of the tumor"
+        },
+        "cellularity": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "Description of the tumor cellularity"
+        },
+        "mucosal_invasion": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "Description of mucosal invasion by the tumor"
+        },
+        "mucosal_ulceration": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "Description of mucosal ulceration"
+        },
+        "mitotic_count": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "Mitotic count per 50 high power fields"
+        },
+        "myxoid_background": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "Description of myxoid background"
+        },
+        "necrosis": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "Description of necrosis within the tumor"
+        },
+        "immunostains": {
+          "type": "array",
+          "inferenceType": "explicit",
+          "instruction": "List of immunostains performed and their results",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "properties": {
+    "patient_name": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Name of the patient"
+    },
+    "medical_record_number": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Unique medical record number of the patient"
+    },
+    "date_of_birth": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Date of birth of the patient in MM/DD/YYYY format"
+    },
+    "gender": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Gender of the patient"
+    },
+    "accession_number": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Unique accession number for the pathology report"
+    },
+    "procedure_date": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Date when the procedure was performed in MM/DD/YYYY format"
+    },
+    "attending_physician": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Name of the attending physician"
+    },
+    "clinical_history": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Brief clinical history provided for the patient"
+    },
+    "specimen": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Description of the specimen collected"
+    },
+    "diagnosis": {
+      "$ref": "#/definitions/DIAGNOSIS",
+      "instruction": "-"
+    },
+    "gross_description": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Detailed gross description of the specimen"
+    },
+    "microscopic_description": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Detailed microscopic description of the specimen"
+    },
+    "immunostains": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Details of the immunostains performed and their results"
+    },
+    "comment": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Any additional comments or interpretations by the pathologist"
+    },
+    "hospital_name": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Name of the hospital where the pathology report was generated"
+    },
+    "hospital_address": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Address of the hospital where the pathology report was generated"
+    }
+  }
+}

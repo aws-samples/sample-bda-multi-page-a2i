@@ -1,0 +1,240 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "This is a health insurance claim form that contains patient and insurance details",
+  "class": "Health Insurance Claim Form",
+  "type": "object",
+  "definitions": {
+    "ADDRESS_DETAILS": {
+      "type": "object",
+      "properties": {
+        "street": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "The street address"
+        },
+        "city": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "The city"
+        },
+        "state": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "The state"
+        },
+        "zip_code": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "The ZIP code"
+        },
+        "telephone": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "The telephone number"
+        }
+      }
+    },
+    "PROVIDER_DETAILS": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "The name of the provider"
+        },
+        "address": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "The address of the provider"
+        },
+        "phone_number": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "The phone number of the provider"
+        }
+      }
+    }
+  },
+  "properties": {
+    "insured's_id_number": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The ID number of the insured person"
+    },
+    "patient's_name": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The name of the patient"
+    },
+    "patient's_birth_date": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The birth date of the patient in MM/DD/YY format"
+    },
+    "patient's_sex": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The sex of the patient, either 'M' or 'F'"
+    },
+    "insured's_name": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The name of the insured person"
+    },
+    "patient's_address": {
+      "$ref": "#/definitions/ADDRESS_DETAILS",
+      "instruction": "The address details of the patient"
+    },
+    "insured's_address": {
+      "$ref": "#/definitions/ADDRESS_DETAILS",
+      "instruction": "The address details of the insured person"
+    },
+    "patient_relationship_to_insured": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The relationship of the patient to the insured person, e.g. 'Self', 'Spouse', 'Child', 'Other'"
+    },
+    "patient_status": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The status of the patient, e.g. 'Single', 'Married', 'Other'"
+    },
+    "patient_employment_status": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The employment status of the patient, e.g. 'Employed', 'Full-Time Student', 'Part-Time Student'"
+    },
+    "other_insured's_name": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The name of any other insured person"
+    },
+    "insured's_policy_group_or_feca_number": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The policy group or FECA number of the insured person"
+    },
+    "condition_related_to_employment": {
+      "type": "boolean",
+      "inferenceType": "explicit",
+      "instruction": "Whether the patient's condition is related to employment"
+    },
+    "condition_related_to_auto_accident": {
+      "type": "boolean",
+      "inferenceType": "explicit",
+      "instruction": "Whether the patient's condition is related to an auto accident"
+    },
+    "condition_related_to_other_accident": {
+      "type": "boolean",
+      "inferenceType": "explicit",
+      "instruction": "Whether the patient's condition is related to another type of accident"
+    },
+    "other_health_benefit_plan": {
+      "type": "boolean",
+      "inferenceType": "explicit",
+      "instruction": "Whether there is another health benefit plan"
+    },
+    "insured's_or_authorized_person's_signature": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The signature of the insured person or their authorized representative"
+    },
+    "insured's_or_authorized_person's_signature_date": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The date of the insured person's or their authorized representative's signature in MM/DD/YYYY format"
+    },
+    "patient's_or_authorized_person's_signature": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The signature of the patient or their authorized representative"
+    },
+    "patient's_or_authorized_person's_signature_date": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The date of the patient's or their authorized representative's signature in MM/DD/YYYY format"
+    },
+    "date_of_current_illness,_injury,_or_pregnancy": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The date of the current illness, injury, or pregnancy in MM/DD/YYYY format"
+    },
+    "first_date_of_same_or_similar_illness": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The first date of the same or similar illness in MM/DD/YYYY format"
+    },
+    "referring_physician_name": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The name of the referring physician"
+    },
+    "referring_physician_id_number": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The ID number of the referring physician"
+    },
+    "diagnosis_codes": {
+      "type": "array",
+      "inferenceType": "explicit",
+      "instruction": "The diagnosis codes related to the patient's condition",
+      "items": {
+        "type": "string"
+      }
+    },
+    "medicaid_resubmission_code": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The Medicaid resubmission code, if applicable"
+    },
+    "prior_authorization_number": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The prior authorization number, if applicable"
+    },
+    "federal_tax_id_number": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The federal tax ID number of the provider"
+    },
+    "patient's_account_number": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The patient's account number"
+    },
+    "accept_assignment": {
+      "type": "boolean",
+      "inferenceType": "explicit",
+      "instruction": "Whether the provider accepts assignment"
+    },
+    "total_charge": {
+      "type": "number",
+      "inferenceType": "explicit",
+      "instruction": "The total charge for the services provided"
+    },
+    "amount_paid": {
+      "type": "number",
+      "inferenceType": "explicit",
+      "instruction": "The amount paid for the services"
+    },
+    "balance_due": {
+      "type": "number",
+      "inferenceType": "explicit",
+      "instruction": "The balance due for the services"
+    },
+    "provider_signature": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The signature of the provider"
+    },
+    "provider_signature_date": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The date of the provider's signature in MM/DD/YYYY format"
+    },
+    "provider_name,_address,_and_phone_number": {
+      "$ref": "#/definitions/PROVIDER_DETAILS",
+      "instruction": "The name, address, and phone number of the provider"
+    }
+  }
+}

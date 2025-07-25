@@ -1,0 +1,7 @@
+#
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+#
+Pillow
+pdf2image
+boto3 >= 1.38.4

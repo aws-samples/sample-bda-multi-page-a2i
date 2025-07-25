@@ -1,0 +1,327 @@
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+
+<crowd-form>
+    <div style="margin-bottom: 20px;">
+        <h1>Document Field Review Tool</h1>
+        <p>Please review and verify the extracted fields from the document.</p>
+    </div>
+
+    <div style="display: flex; max-height: 800px; border: 1px solid #eee; margin-bottom: 20px;">
+        <!-- Document thumbnails navigation -->
+        <div
+            style="width: 120px; padding: 10px; overflow-y: auto; border-right: 1px solid #eee; background-color: #f8f8f8;">
+            <h4 style="margin-top: 0; text-align: center;">Pages</h4>
+            {% for url in task.input.presigned_urls %}
+            <div class="page-thumb" data-page="{{ forloop.index }}" onclick="selectPage({{ forloop.index }})"
+                style="margin-bottom: 10px; cursor: pointer; text-align: center;">
+                <img id="thumb-img-{{ forloop.index }}" src="{{ url }}" alt="Page {{ forloop.index }}"
+                    style="width: 100px; border: 2px solid {% if forloop.index == 1 %}#007bff{% else %}#ddd{% endif %}; border-radius: 4px;" />
+                <div style="margin-top: 5px; font-size: 12px;">
+                    Page {{ forloop.index }}
+                    {% assign page_index_str = forloop.index | append: '' %}
+                    {% if task.input.fields_by_page[page_index_str] and task.input.fields_by_page[page_index_str] !=
+                    empty %}
+                    <span class="field-count"
+                        style="background-color: #007bff; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px;">
+                        {{ task.input.fields_by_page[page_index_str] | size }}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Current document page display -->
+        <div id="image-container"
+            style="flex: 3; padding: 10px; overflow-y: auto; text-align: center; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; position: relative;">
+            <div class="image-wrapper" style="position: relative; display: inline-block;">
+                <img id="current-page-image"
+                    style="max-width: 100%; max-height: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" />
+                <div id="highlight-overlay"
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></div>
+            </div>
+        </div>
+
+        <!-- Fields for review -->
+        <div style="flex: 2; padding: 20px; overflow-y: auto; border-left: 1px solid #eee;">
+            <h3 id="page-header">Page 1</h3>
+
+            {% for url in task.input.presigned_urls %}
+            {% assign page_index_str = forloop.index | append: '' %}
+
+            <div id="page-content-{{ forloop.index }}" class="page-content"
+                style="display: {% if forloop.index == 1 %}block{% else %}none{% endif %};">
+                <div class="page-info">
+                    {% if task.input.fields_by_page[page_index_str] and task.input.fields_by_page[page_index_str] !=
+                    empty %}
+                    {% for field in task.input.fields_by_page[page_index_str] %}
+                    <div class="field-pair"
+                        style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
+                        <!-- Field Name -->
+                        <div style="margin-bottom: 10px;">
+                            <label style="font-weight: bold; display: block; margin-bottom: 5px;">
+                                Field Name:
+                                <span style="float: right; font-size: 12px; color: #dc3545;">
+                                    Confidence: {{ field.confidence | times: 100 | round }}%
+                                </span>
+                            </label>
+                            <div
+                                style="background-color: #f8f8f8; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+                                {{ field.field_name }}
+                            </div>
+                        </div>
+
+                        <!-- Field Value -->
+                        <div>
+                            <label style="font-weight: bold; display: block; margin-bottom: 5px;">
+                                Value:
+                            </label>
+                            {% if field.type == "number" %}
+                            <crowd-input name="{{ field.field_name }}" value="{{ field.value }}" type="number"
+                                style="width: 100%;"></crowd-input>
+                            {% elsif field.type == "date" %}
+                            <crowd-input name="{{ field.field_name }}" value="{{ field.value }}"
+                                placeholder="YYYY-MM-DD" style="width: 100%;"></crowd-input>
+                            {% else %}
+                            <crowd-text-area name="{{ field.field_name }}" value="{{ field.value }}"
+                                style="width: 100%;"></crowd-text-area>
+                            {% endif %}
+                        </div>
+
+                        <!-- Highlight button -->
+                        <div style="margin-top: 10px; text-align: right;">
+                            <crowd-button class="highlight-btn" data-page="{{ forloop.parentloop.index }}"
+                                data-geometry="{{ field.geometry | escape }}" onclick="highlightArea(this)" size="small"
+                                secondary>
+                                Highlight on Image
+                            </crowd-button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p style="color: #666; font-style: italic;">No fields to review on this page.</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <crowd-checkbox name="confirmation" required>
+            I have reviewed all fields across all pages and corrected values where needed.
+        </crowd-checkbox>
+    </div>
+
+    <script>
+        // Initialize global variables
+        let currentPageNum = 1;
+        let activeHighlightButton = null;
+        let resizeObserver = null;
+
+        // Constants for coordinate correction
+        const COORDINATE_CORRECTION = {
+            x: 0,
+            y: -0.01,  // Small correction for vertical alignment
+            width: 1.08,  // Make slightly wider
+            height: 1.2   // Make slightly taller
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize the first page image
+            loadPageImage(1);
+
+            // Make sure the page header shows correctly
+            updatePageHeader(1);
+
+            // Set up resize observer for responsive bounding boxes
+            setupResizeObserver();
+
+            // Also listen to window resize events
+            window.addEventListener('resize', handleResize);
+        });
+
+        function setupResizeObserver() {
+            // Use ResizeObserver if supported
+            if (typeof ResizeObserver === 'function') {
+                resizeObserver = new ResizeObserver(entries => {
+                    // If we have an active highlight, redraw it when container resizes
+                    if (activeHighlightButton) {
+                        clearHighlights();
+                        drawHighlightsForButton(activeHighlightButton);
+                    }
+                });
+
+                // Observe the image container
+                const container = document.getElementById('image-container');
+                if (container) {
+                    resizeObserver.observe(container);
+                }
+            }
+        }
+
+        function handleResize() {
+            // Redraw highlights on window resize
+            if (activeHighlightButton) {
+                clearHighlights();
+                drawHighlightsForButton(activeHighlightButton);
+            }
+        }
+
+        function updatePageHeader(pageNum) {
+            // Update page header text
+            document.getElementById('page-header').textContent = "Page " + pageNum;
+        }
+
+        function selectPage(pageNum) {
+            // Update current page tracker
+            currentPageNum = pageNum;
+
+            // Update page header
+            updatePageHeader(pageNum);
+
+            // Show the selected page content, hide others
+            document.querySelectorAll('.page-content').forEach(div => {
+                div.style.display = 'none';
+            });
+            const pageContent = document.getElementById("page-content-" + pageNum);
+            if (pageContent) {
+                pageContent.style.display = 'block';
+            } else {
+                console.error("Page content element for page " + pageNum + " not found");
+            }
+
+            // Update thumbnail highlighting
+            document.querySelectorAll('.page-thumb img').forEach(img => {
+                img.style.borderColor = '#ddd';
+            });
+            const thumbImg = document.querySelector(".page-thumb[data-page='" + pageNum + "'] img");
+            if (thumbImg) {
+                thumbImg.style.borderColor = '#007bff';
+            }
+
+            // Load the image
+            loadPageImage(pageNum);
+
+            // Clear any highlights
+            clearHighlights();
+            activeHighlightButton = null;
+        }
+
+        function loadPageImage(pageNum) {
+            try {
+                // Get the URL directly from the thumbnail image element
+                const thumbImg = document.getElementById("thumb-img-" + pageNum);
+
+                if (thumbImg && thumbImg.src) {
+                    const mainImg = document.getElementById('current-page-image');
+
+                    // Clear any existing onload handler
+                    mainImg.onload = null;
+
+                    // Set up onload handler before setting src
+                    mainImg.onload = function () {
+                        // If we have an active highlight, redraw it after image loads
+                        if (activeHighlightButton) {
+                            clearHighlights();
+                            drawHighlightsForButton(activeHighlightButton);
+                        }
+                    };
+
+                    // Set the main image source to be exactly the same as the thumbnail
+                    mainImg.src = thumbImg.src;
+
+                    // Scroll the thumbnail into view
+                    thumbImg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    console.error("Cannot find thumbnail image for page " + pageNum);
+                }
+            } catch (error) {
+                console.error("Error loading page " + pageNum + ": " + error.message);
+            }
+        }
+
+        function highlightArea(button) {
+            // Store reference to the active highlight button
+            activeHighlightButton = button;
+
+            // Clear previous highlights
+            clearHighlights();
+
+            // Make sure we're on the right page
+            const pageNum = parseInt(button.getAttribute('data-page'), 10);
+            if (pageNum !== currentPageNum) {
+                selectPage(pageNum);
+                // selectPage will trigger image loading which will redraw highlights when done
+                return;
+            }
+
+            // Draw the highlights directly
+            drawHighlightsForButton(button);
+
+            // Scroll the field-pair into view
+            button.closest('.field-pair').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function drawHighlightsForButton(button) {
+            try {
+                // Get the geometry data
+                const geometryStr = button.getAttribute('data-geometry');
+                const geometry = JSON.parse(geometryStr);
+                const pageNum = parseInt(button.getAttribute('data-page'), 10);
+
+                // Get the actual image dimensions
+                const mainImg = document.getElementById('current-page-image');
+                const imgWidth = mainImg.clientWidth;
+                const imgHeight = mainImg.clientHeight;
+
+                // Handle our geometry format (array of geometries)
+                if (Array.isArray(geometry) && geometry.length > 0) {
+                    const overlay = document.getElementById('highlight-overlay');
+
+                    // Create highlight for each geometry item
+                    geometry.forEach(geom => {
+                        if (geom.page == pageNum && geom.boundingBox) {
+                            // Create the highlight element
+                            const highlight = document.createElement('div');
+                            highlight.className = 'highlight-box';
+                            highlight.style.position = 'absolute';
+                            highlight.style.border = '2px solid #ff6b6b';
+                            highlight.style.backgroundColor = 'rgba(255, 107, 107, 0.2)';
+
+                            // Apply corrections to the coordinates
+                            const left = (geom.boundingBox.left + COORDINATE_CORRECTION.x);
+                            const top = (geom.boundingBox.top + COORDINATE_CORRECTION.y);
+                            const width = (geom.boundingBox.width * COORDINATE_CORRECTION.width);
+                            const height = (geom.boundingBox.height * COORDINATE_CORRECTION.height);
+
+                            // Constrain values to valid range (0-1)
+                            const safeLeft = Math.max(0, Math.min(1, left));
+                            const safeTop = Math.max(0, Math.min(1, top));
+                            const safeWidth = Math.max(0, Math.min(1 - safeLeft, width));
+                            const safeHeight = Math.max(0, Math.min(1 - safeTop, height));
+
+                            // Set position in percentage
+                            highlight.style.left = (safeLeft * 100) + '%';
+                            highlight.style.top = (safeTop * 100) + '%';
+                            highlight.style.width = (safeWidth * 100) + '%';
+                            highlight.style.height = (safeHeight * 100) + '%';
+
+                            overlay.appendChild(highlight);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error highlighting area: ' + error.message);
+                console.error('Geometry data: ' + button.getAttribute('data-geometry'));
+            }
+        }
+
+        function clearHighlights() {
+            const overlay = document.getElementById('highlight-overlay');
+            if (overlay) {
+                overlay.innerHTML = '';
+            }
+        }
+    </script>
+</crowd-form>

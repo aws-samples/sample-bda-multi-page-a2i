@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "This a card that contains key information with respect to a US medical insurance plan coverage, such as plan number and dependents",
+  "class": "Medical-insurance-cards",
+  "type": "object",
+  "definitions": {
+    "InsuranceDetails": {
+      "type": "object",
+      "properties": {
+        "INSURANCE_PROVIDER": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "The full name of the insurance company"
+        },
+        "PLAN_TYPE": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "The type of plan"
+        },
+        "GROUP_NUMBER": {
+          "type": "number",
+          "inferenceType": "explicit",
+          "instruction": "The group number"
+        },
+        "PLAN_NUMBER": {
+          "type": "number",
+          "inferenceType": "explicit",
+          "instruction": "The plan number"
+        },
+        "PLAN_NAME": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "The plan name"
+        },
+        "RxBIN": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "RxBIN  Prescription Bank Identification Number if available"
+        },
+        "RxPCN": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "RxPCN  Prescription Processor Control Number if available"
+        },
+        "RxGRP": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "RxGRP Prescription Group Number, if available"
+        },
+        "PAYER_ID": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "The ID of the payer, typically on the back of the card if available"
+        }
+      }
+    },
+    "MemberDetails": {
+      "type": "object",
+      "properties": {
+        "MEMBER_NAME": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "The member full name"
+        },
+        "MEMBER_ID": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "The unique identifier for the member"
+        },
+        "DATE_OF_BIRTH": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "Member date of birth in YYYY-MM-DD format"
+        },
+        "DEPENDENTS": {
+          "type": "array",
+          "inferenceType": "explicit",
+          "instruction": "List of dependents names if any",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "CopayAmounts": {
+      "type": "object",
+      "properties": {
+        "PCP_IN_NETWORK": {
+          "type": "number",
+          "inferenceType": "explicit",
+          "instruction": "primary care physicians copay in network"
+        },
+        "URGENT_CARE_IN_NETWORK": {
+          "type": "number",
+          "inferenceType": "explicit",
+          "instruction": "urgent care copay in network"
+        },
+        "SPECIALIST_VISIT_IN_NETWORK": {
+          "type": "number",
+          "inferenceType": "explicit",
+          "instruction": "specialist copay in network"
+        },
+        "EMERGENCY_ROOM_IN_NETWORK": {
+          "type": "number",
+          "inferenceType": "explicit",
+          "instruction": "emergency room copay in network"
+        }
+      }
+    }
+  },
+  "properties": {
+    "INSURANCE_DETAILS": {
+      "$ref": "#/definitions/InsuranceDetails",
+      "instruction": "-"
+    },
+    "MEMBER_DETAILS": {
+      "$ref": "#/definitions/MemberDetails",
+      "instruction": "-"
+    },
+    "COPAY_AMOUNTS": {
+      "$ref": "#/definitions/CopayAmounts",
+      "instruction": "-"
+    },
+    "DEDUCTIBLE_OUT_OF_NETWORK": {
+      "type": "number",
+      "inferenceType": "explicit",
+      "instruction": "The deductible amount out of network for an individual"
+    },
+    "OUT_OF_POCKET_MAXIMUM_OUT_OF_NETWORK": {
+      "type": "number",
+      "inferenceType": "explicit",
+      "instruction": "Out of pocket maximum out of network for an individual"
+    },
+    "DEDUCTIBLE_IN_NETWORK": {
+      "type": "number",
+      "inferenceType": "explicit",
+      "instruction": "The deductible amount in network for an individual"
+    },
+    "OUT_OF_POCKET_MAXIMUM_IN_NETWORK": {
+      "type": "number",
+      "inferenceType": "explicit",
+      "instruction": "Out of pocket maximum in network for an individual"
+    }
+  }
+}

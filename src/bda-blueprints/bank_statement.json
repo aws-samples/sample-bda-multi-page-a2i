@@ -1,0 +1,154 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A financial statement for a bank account listing transaction summaries for a specific duration",
+  "class": "Bank-Statement",
+  "type": "object",
+  "definitions": {
+    "SummaryItem": {
+      "type": "object",
+      "properties": {
+        "summary_desc": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "Description of the line item for the account summary table"
+        },
+        "summary_amount": {
+          "type": "number",
+          "inferenceType": "explicit",
+          "instruction": "Dollar amount for the corresponding summary item"
+        }
+      }
+    },
+    "TransactionItem": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "inferenceType": "inferred",
+          "instruction": "Date of the transaction in MM/DD/YYYY format"
+        },
+        "description": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "Description of the transaction item"
+        },
+        "withdrawals": {
+          "type": "number",
+          "inferenceType": "explicit",
+          "instruction": "dollar amount of withdrawal for this transaction"
+        },
+        "deposits": {
+          "type": "number",
+          "inferenceType": "explicit",
+          "instruction": "Dollar amount of deposits for this transaction"
+        },
+        "balance": {
+          "type": "number",
+          "inferenceType": "explicit",
+          "instruction": "Balance amount in the account including this transaction"
+        }
+      }
+    },
+    "account_summary": {
+      "type": "object",
+      "properties": {
+        "summary_desc": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "Description of the line item for the account summary table"
+        },
+        "summary_amount": {
+          "type": "number",
+          "inferenceType": "explicit",
+          "instruction": "Dollar amount for the corresponding summary item"
+        }
+      }
+    },
+    "transaction_details": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "inferenceType": "inferred",
+          "instruction": "Date of the transaction in MM/DD/YYYY format"
+        },
+        "description": {
+          "type": "string",
+          "inferenceType": "explicit",
+          "instruction": "Description of the transaction item"
+        },
+        "withdrawals": {
+          "type": "number",
+          "inferenceType": "explicit",
+          "instruction": "dollar amount of withdrawal for this transaction"
+        },
+        "deposits": {
+          "type": "number",
+          "inferenceType": "explicit",
+          "instruction": "Dollar amount of deposits for this transaction"
+        },
+        "balance": {
+          "type": "number",
+          "inferenceType": "explicit",
+          "instruction": "Balance amount in the account including this transaction"
+        }
+      }
+    }
+  },
+  "properties": {
+    "account_number": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The account number for which the statement is prepared"
+    },
+    "branch_transit_number": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "The branch transit number"
+    },
+    "account_summary": {
+      "type": "array",
+      "instruction": "-",
+      "items": {
+        "$ref": "#/definitions/account_summary"
+      }
+    },
+    "account_holder_name": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Name of the bank account holder"
+    },
+    "account_holder_address": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Full address of the account holder including street, city, state and zip code"
+    },
+    "bank_name": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Name of the finanical institution "
+    },
+    "account_type": {
+      "type": "string",
+      "inferenceType": "explicit",
+      "instruction": "Type of the bank account, such as 'Checking', 'Savings', etc."
+    },
+    "transaction_details": {
+      "type": "array",
+      "instruction": "-",
+      "items": {
+        "$ref": "#/definitions/transaction_details"
+      }
+    },
+    "statement_start_date": {
+      "type": "string",
+      "inferenceType": "inferred",
+      "instruction": "Statement start date in MM/DD/YYYY format"
+    },
+    "statement_end_date": {
+      "type": "string",
+      "inferenceType": "inferred",
+      "instruction": "End date for the statement in MM/DD/YYYY format"
+    }
+  }
+}
